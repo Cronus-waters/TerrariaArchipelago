@@ -1,19 +1,8 @@
 using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Helpers;
-using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Enums;
-using Archipelago.MultiClient.Net.Models;
-using Terraria;
 using Terraria.ModLoader;
-using Terraria.Achievements;
-using Microsoft.Xna.Framework;
 using System;
-using System.IO;
-using System.Threading;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Text;
-using Terraria.ID;
+using TerrariaArchipelago.Common;
 
 namespace Archipelago.Commands
 {
@@ -37,12 +26,12 @@ namespace Archipelago.Commands
         {
             if (ArchipelagoTerraria.session != null && ArchipelagoTerraria.session.Socket.Connected)
             {
-                Main.NewText("Already Connected to Archipelago Server.");
+                TextUtils.SendText("Already Connected to Archipelago Server.");
                 return;
             }
             if (args.Length < 2 || args.Length > 3)
             {
-                Main.NewText("Invalid Arguments: /connect username ip port");
+                TextUtils.SendText("Invalid Arguments: /connect username ip port");
                 return;
             }
             int port = 38281;
@@ -61,11 +50,11 @@ namespace Archipelago.Commands
             if (!result.Successful)
             {
                 DisconnectCommand.Disconnect();
-                Main.NewText("Failed Connection: " + result.ToString());
+                TextUtils.SendText("Failed Connection: " + result.ToString());
                 return;
             }
             On.Terraria.Chat.ChatCommandProcessor.ProcessIncomingMessage += ArchipelagoTerraria.OnTerrariaChatMessage;
-            Main.NewText("Connected to Archipelago server.");
+            TextUtils.SendText("Connected to Archipelago server.");
         }
 	}
 }

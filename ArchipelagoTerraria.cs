@@ -2,22 +2,11 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Packets;
 using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
-using Terraria;
+using TerrariaArchipelago.Common;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
 using System;
-using System.IO;
-using System.Threading;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Text;
-using Terraria.ID;
-using Archipelago.MultiClient.Net.Helpers;
-using Newtonsoft.Json.Linq;
-using Terraria.Localization;
-using Terraria.Achievements;
 using Archipelago.Items;
-using Archipelago.Achievements;
 
 namespace Archipelago
 {
@@ -77,7 +66,7 @@ namespace Archipelago
             {
                 PrintPacket received = (PrintPacket)packet;
                 if(!received.Text.Contains("Space:"))
-                    Main.NewText(received.Text);
+                    TextUtils.SendText(received.Text);
                 return;
             }
             if (type == ArchipelagoPacketType.RoomUpdate)
@@ -87,13 +76,64 @@ namespace Archipelago
             }
             if (type == ArchipelagoPacketType.PrintJSON)
             {
-                /*ItemPrintJsonPacket received = (ItemPrintJsonPacket)packet;
-                int playerid = Int32.Parse(received.Data[0].Text);
-                long itemid = Int64.Parse(received.Data[2].Text);
-                long locationid = Int64.Parse(received.Data[4].Text);
-                Main.NewText(session.Players.GetPlayerAlias(playerid) + received.Data[1].Text +
-                    session.Items.GetItemName(itemid) + received.Data[3].Text + 
-                    session.Locations.GetLocationNameFromId(locationid) + received.Data[5].Text);*/
+                PrintJsonPacket receivedPacket = (PrintJsonPacket)packet;
+                string text = "";
+                Color color = new Color(255, 255, 255);
+                foreach(JsonMessagePart part in receivedPacket.Data)
+                {
+                    // Build the message string
+                    string add = "";
+                    if (part.Type == JsonMessagePartType.PlayerId)
+                    {
+                        // Get player name from server
+                        add = session.Players.GetPlayerAlias(Int32.Parse(part.Text));
+                    } else if (part.Type == JsonMessagePartType.ItemId)
+                    {
+                        // Get item name from server
+                        add = session.Items.GetItemName(Int64.Parse(part.Text));
+                    } else if(part.Type == JsonMessagePartType.LocationId)
+                    {
+                        // Get location name from server
+                        add = session.Locations.GetLocationNameFromId(Int64.Parse(part.Text));
+                    } else if(part.Type == JsonMessagePartType.Color)
+                    {
+                        // Change the color of the full text
+                        switch (part.Color)
+                        {
+                            case JsonMessagePartColor.Black:
+                                color = new Color(127, 127, 127); // Using gray instead of pure black to make it easier to read
+                                break;
+                            case JsonMessagePartColor.Red:
+                                color = Color.Red;
+                                break;
+                            case JsonMessagePartColor.Green:
+                                color = Color.Green;
+                                break;
+                            case JsonMessagePartColor.Yellow:
+                                color = Color.Yellow;
+                                break;
+                            case JsonMessagePartColor.Blue:
+                                color = Color.Blue;
+                                break;
+                            case JsonMessagePartColor.Magenta:
+                                color = Color.Magenta;
+                                break;
+                            case JsonMessagePartColor.Cyan:
+                                color = Color.Cyan;
+                                break;
+                            default:
+                                /*
+                                 * Font styles (underline, bold), and background colors (<color>_bg) aren't supported by Terraria
+                                 * So we just default to sending the text in white.
+                                 * The actual white color also falls through this, since it's the same operation
+                                 */
+                                color = Color.White;
+                                break;
+                        }
+                    }
+                }
+                // Send the text
+                TextUtils.SendText(text, color);
                 return;
             }
             if(type == ArchipelagoPacketType.ReceivedItems)
@@ -115,7 +155,7 @@ namespace Archipelago
                 Achievements.AchievementManager.CompleteLocationChecks();
                 return;
             }
-            Main.NewText("Recieved Unchecked packet type: " + type);
+            TextUtils.SendText("Received Unchecked packet type: " + type, Color.White);
         }
     }
 }

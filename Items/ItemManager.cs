@@ -1,22 +1,11 @@
-using Archipelago.MultiClient.Net;
-using Archipelago.MultiClient.Net.Packets;
-using Archipelago.MultiClient.Net.Enums;
 using Archipelago.MultiClient.Net.Models;
 using Terraria;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using System;
-using System.IO;
-using System.Threading;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Text;
 using Terraria.ID;
 using Archipelago.MultiClient.Net.Helpers;
-using Newtonsoft.Json.Linq;
-using Terraria.Achievements;
-using Terraria.GameContent.Achievements;
 using Terraria.Localization;
+using TerrariaArchipelago.Common;
 
 namespace Archipelago.Items
 {
@@ -64,10 +53,11 @@ namespace Archipelago.Items
         {
             NetworkItem item = helper.DequeueItem();
 
-            Main.NewText("You Received " + ArchipelagoTerraria.session.Items.GetItemName(item.Item) +
+            // Let the server handle text packets, via JSONPrintPacket (see ArchipelagoTerraria.cs)
+            /*TextUtils.SendText("You Received " + ArchipelagoTerraria.session.Items.GetItemName(item.Item) +
 
                 " from " + ArchipelagoTerraria.session.Players.GetPlayerAlias(item.Player) +
-                " (" + ArchipelagoTerraria.session.Locations.GetLocationNameFromId(item.Location) + ")");
+                " (" + ArchipelagoTerraria.session.Locations.GetLocationNameFromId(item.Location) + ")");*/
 
             ArchipelagoItemReceived(item.Item);
         }
@@ -78,7 +68,7 @@ namespace Archipelago.Items
             if (archipelago_item_id == PROGRESSIVE_CRAFTING_ITEM)
             {
                 crafting_progression++;
-                Main.NewText("Crafting Progression Upgraded to Tier " + crafting_progression_string[crafting_progression - 1]);
+                TextUtils.SendText("Crafting Progression Upgraded to Tier " + crafting_progression_string[crafting_progression - 1]);
                 return;
             }
             if (archipelago_item_id == LIFE_CRYSTAL_ITEM)
@@ -97,9 +87,9 @@ namespace Archipelago.Items
                     if (!player.active)
                         continue;
                     player.TeleportationPotion();
-                    Main.NewText(player.name + " Was Randomly Teleported.");
+                    TextUtils.SendText(player.name + " Was Randomly Teleported.");
                 }
-                Main.NewText("Random Teleportation Trap Activated.");
+                TextUtils.SendText("Random Teleportation Trap Activated.");
                 return;
             }
             else if (archipelago_item_id == BOULDER_TRAP_ITEM)
@@ -109,9 +99,9 @@ namespace Archipelago.Items
                     if (!player.active)
                         continue;
                     NPC.SpawnOnPlayer(player.whoAmI, NPCID.QueenBee);
-                    Main.NewText(player.name + " Got Fucked.");
+                    TextUtils.SendText(player.name + " Got Fucked.");
                 }
-                Main.NewText("Queen Bee Trap Activated.");
+                TextUtils.SendText("Queen Bee Trap Activated.");
                 return;
             }
             else if (archipelago_item_id == LAVA_TRAP_ITEM)
@@ -121,9 +111,9 @@ namespace Archipelago.Items
                     if (!player.active)
                         continue;
                     NPC.SpawnWOF(new Vector2(0, 0));
-                    Main.NewText(player.name + " Got Fucked.");
+                    TextUtils.SendText(player.name + " Got Fucked.");
                 }
-                Main.NewText("WoF Trap Activated");
+                TextUtils.SendText("WoF Trap Activated");
                 return;
             }
             else if (archipelago_item_id == ICE_TRAP_ITEM)
@@ -133,9 +123,9 @@ namespace Archipelago.Items
                     if (!player.active)
                         continue;
                     player.AddBuff(BuffID.Frozen, 5 * 60);
-                    Main.NewText(player.name + " Was Ice Trapped");
+                    TextUtils.SendText(player.name + " Was Ice Trapped");
                 }
-                Main.NewText("Ice Trap Activated");
+                TextUtils.SendText("Ice Trap Activated");
                 return;
             }
             else if (archipelago_item_id == GRAVITY_FLIP_TRAP_ITEM)
@@ -145,15 +135,15 @@ namespace Archipelago.Items
                     if (!player.active)
                         continue;
                     player.AddBuff(BuffID.VortexDebuff, 30 * 60);
-                    Main.NewText(player.name + " Was Gravity Trapped");
+                    TextUtils.SendText(player.name + " Was Gravity Trapped");
                 }
-                Main.NewText("Gravity Trap Activated");
+                TextUtils.SendText("Gravity Trap Activated");
                 return;
             }
             else if (archipelago_item_id == BLOOD_MOON_TRAP_ITEM)
             {
                 Main.bloodMoon = true;
-                Main.NewText("Blood Moon Trap Activated");
+                TextUtils.SendText("Blood Moon Trap Activated");
                 return;
             }
             // Misc Items
@@ -205,7 +195,7 @@ namespace Archipelago.Items
                 }
                 return;
             }
-            Main.NewText("Unknown Item Received: " + archipelago_item_id);
+            TextUtils.SendText("Unknown Item Received: " + archipelago_item_id);
         }
 
         public static void PostAddRecipes()

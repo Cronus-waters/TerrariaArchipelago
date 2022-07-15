@@ -98,7 +98,7 @@ namespace Archipelago.Achievements
             foreach(Achievement achievement in achievements_completed)
             {
                 // Let the Archipelago Server handle printing
-                // Main.NewText(achievement.FriendlyName + " Was Completed.");
+                // TextUtils.SendText(achievement.FriendlyName + " Was Completed.");
                 // Game Completion Check
                 if (achievements_by_id[achievement] == 0)
                 {
