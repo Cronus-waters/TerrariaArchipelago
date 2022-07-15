@@ -84,7 +84,7 @@ namespace Archipelago.Items
             {
                 foreach (Player player in Main.player)
                 {
-                    if (!player.active)
+                    if (!player.active || player.dead)
                         continue;
                     player.TeleportationPotion();
                     TextUtils.SendText(player.name + " Was Randomly Teleported.");
@@ -96,7 +96,7 @@ namespace Archipelago.Items
             {
                 foreach (Player player in Main.player)
                 {
-                    if (!player.active)
+                    if (!player.active || player.dead)
                         continue;
                     NPC.SpawnOnPlayer(player.whoAmI, NPCID.QueenBee);
                     TextUtils.SendText(player.name + " Got Fucked.");
@@ -108,7 +108,7 @@ namespace Archipelago.Items
             {
                 foreach (Player player in Main.player)
                 {
-                    if (!player.active)
+                    if (!player.active || player.dead)
                         continue;
                     NPC.SpawnWOF(new Vector2(0, 0));
                     TextUtils.SendText(player.name + " Got Fucked.");
@@ -120,7 +120,7 @@ namespace Archipelago.Items
             {
                 foreach (Player player in Main.player)
                 {
-                    if (!player.active)
+                    if (!player.active || player.dead)
                         continue;
                     player.AddBuff(BuffID.Frozen, 5 * 60);
                     TextUtils.SendText(player.name + " Was Ice Trapped");
@@ -132,7 +132,7 @@ namespace Archipelago.Items
             {
                 foreach (Player player in Main.player)
                 {
-                    if (!player.active)
+                    if (!player.active || player.dead)
                         continue;
                     player.AddBuff(BuffID.VortexDebuff, 30 * 60);
                     TextUtils.SendText(player.name + " Was Gravity Trapped");
